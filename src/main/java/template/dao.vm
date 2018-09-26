@@ -1,0 +1,18 @@
+﻿package $!{tab.pkgDao};
+
+
+import $!{tab.pkgBean}.$!{tab.clsName};
+import com.vphoto.mall.$!{tab.model}.provider.metadata.mybatis.IBaseMapperDao;
+import org.springframework.stereotype.Repository;
+
+/**
+ * 备注：$!{tab.table_comment}
+ * 创建时间:$!{tab.createTime}
+ * @author  $!{tab.userName}
+ *
+ */
+ 
+@Repository
+public interface I$!{tab.clsName}Dao extends IBaseMapperDao<$!{tab.clsName}, Long> {}
+ 
+

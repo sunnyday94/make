@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="$!{tab.pkgDao}.I$!{tab.clsName}Dao">
+	<!-- d的结果集映射 -->
+	<resultMap id="resultD$!{tab.clsName}" type="$!{tab.pkgBean}.D$!{tab.clsName}">
+#foreach($tc in $!tcList)			
+		<!-- 字段备注: $!{tc.column_comment}   字段长度：$!{tc.column_type}  字段默认值：$!{tc.column_default}  -->	
+		<result column="$!{tc.column_name}" property="$!{tc.fieldName}" jdbcType="$!{tc.jdbcType}" />
+#end	
+	</resultMap>
+	
+	<!-- b的结果集映射 -->
+	<resultMap id="resultB$!{tab.clsName}" type="$!{tab.pkgBo}.B$!{tab.clsName}">
+#foreach($tc in $!tcList)			
+#if($!{tc.fieldName}!='crDate'&&$!{tc.fieldName}!='opDate')
+		<!-- 字段备注: $!{tc.column_comment}   字段长度：$!{tc.column_type}  字段默认值：$!{tc.column_default}  -->	
+		<result column="$!{tc.column_name}" property="$!{tc.fieldName}" jdbcType="$!{tc.jdbcType}" />
+#end		
+#end	
+	</resultMap>
+		
+	<!-- 所有字段  -->
+	<sql id="base_column_list">
+    #foreach($tc in $!tcList)$!{tc.column_name}#if($!{velocityCount}!= $tcList.size()) ,#end#end
+    
+    </sql>
+	    
+	<!-- 根据id查询单个实体 -->
+    <select id="getByPrimaryKey" parameterType="java.lang.Long" resultMap="resultB$!{tab.clsName}">
+        select <include refid="base_column_list"/>
+        from $!{tab.table_name} t
+        where t.id = #{id}
+    </select>
+
+#if($!{tab.bussKey})
+	<!-- 根据业务 主键查询单个实体 -->
+    <select id="getByBusinessKey" parameterType="java.lang.String" resultMap="resultB$!{tab.clsName}">
+        select <include refid="base_column_list"/>
+        from  $!{tab.table_name} t
+        where t.$!{tab.bussKey.column_name} = #{businessKey} and t.delete_flag = 0 
+    </select>
+#end
+   
+	<!-- 插入全部  -->
+    <insert id="insert" parameterType="$!{tab.pkgBean}.D$!{tab.clsName}" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO $!{tab.table_name} (<include refid="base_column_list"/>)
+        VALUES ( #foreach($tc in $!tcList)#{$!{tc.fieldName}}#if($!{velocityCount}!= $tcList.size()) ,#end#end )
+    </insert>
+    
+	<!-- 更新全部  -->
+    <update id="update" parameterType="$!{tab.pkgBean}.D$!{tab.clsName}">
+        update $!{tab.table_name}
+#if($!{tab.bussKey})		
+        set  #foreach($tc in $!tcList)#if($!{tc.fieldName} != 'id' and $!{tc.fieldName} != 'ID' and $!{tc.fieldName}!=$!{tab.bussKey.fieldName})$!{tc.column_name}=#{$!{tc.fieldName}}#if($!{velocityCount}!= $tcList.size()) ,#end#end#end
+		
+		where  $!{tab.bussKey.column_name} = #{$!{tab.bussKey.fieldName}}
+#else
+		set  #foreach($tc in $!tcList)#if($!{tc.fieldName} != 'id' and $!{tc.fieldName} != 'ID')$!{tc.column_name}=#{$!{tc.fieldName}}#if($!{velocityCount}!= $tcList.size()) ,#end#end#end
+		
+		where id = #{id}
+#end   		
+    </update>
+    
+	<!-- 所有添加和修改的字段  -->
+    <sql id="base_insert_or_update_set">
+        <set>
+#foreach($tc in $!tcList)#if($!{tc.fieldName} != 'id' and $!{tc.fieldName} != 'ID')
+		<if test="$!{tc.fieldName} != null  #if($!{tc.data_type}=='varchar'||$!{tc.data_type}=='VARCHAR') and $!{tc.fieldName} != '' #end">
+			$!{tc.column_name} = #{$!{tc.fieldName}}#if($!{velocityCount}!= $tcList.size()),#end
+		
+		</if>
+#end#end
+		</set>
+    </sql >
+	
+	<!-- 非空插入  -->
+    <insert id="insertSelective" parameterType="$!{tab.pkgBean}.D$!{tab.clsName}" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO $!{tab.table_name} <include refid="base_insert_or_update_set" />
+    </insert>
+    
+    <!-- 只更新非空的 -->
+    <update id="updateByPrimaryKeySelective" parameterType="$!{tab.pkgBean}.D$!{tab.clsName}">
+        update $!{tab.table_name}
+        <include refid="base_insert_or_update_set" />
+#if($!{tab.bussKey})		
+		where $!{tab.bussKey.column_name} = #{$!{tab.bussKey.fieldName}}
+#else
+   		where id = #{id}
+#end 
+    </update>
+    
+    <!-- 根据id删除对象  必须使用value 不能使用ids（形参） -->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        DELETE FROM $!{tab.table_name}
+        WHERE id in (${value})
+    </delete>
+    
+    <!-- 软删除   1为删除  必须使用value 不能使用ids（形参） -->
+    <update id="deleteSoftly" parameterType="java.lang.String">
+        update $!{tab.table_name}
+        set delete_flag = 1
+        WHERE id in (${value})
+    </update>
+    
+#if($!{tab.bussKey})    
+    <!-- 软删除   根据业务主键删除  必须使用value 不能使用bussKey（形参） -->
+    <delete id="deleteSoftlyByBussKey" parameterType="java.lang.String">
+        update $!{tab.table_name}
+        set delete_flag = 1
+        WHERE $!{tab.bussKey.column_name} in ('${value}')
+    </delete>
+#end    
+    <!-- 查询所有的并分页 -->
+    <select id="listAllAsPage" parameterType="$!{tab.pkgBo}.B$!{tab.clsName}" resultMap="resultB$!{tab.clsName}">
+        select
+        <include refid="base_column_list"/>
+        from $!{tab.table_name} t
+        <include refid="base_where"/>
+    </select>
+    
+    <!-- 查询个数-->
+    <select id="getAllTotals" parameterType="$!{tab.pkgBo}.B$!{tab.clsName}" resultType="java.lang.Long">
+        select count(id)
+        from $!{tab.table_name} t
+        <include refid="base_where"/>
+    </select>
+    
+    <!-- where 条件  -->
+    <sql id="base_where">
+    	<where>
+#foreach($tc in $!tcList)	
+#if($!{tc.fieldName}!='crDate'&&$!{tc.fieldName}!='opDate')
+		<if test="b.$!{tc.fieldName} != null #if($!{tc.data_type}=='varchar'||$!{tc.data_type}=='VARCHAR' )  and b.$!{tc.fieldName} != '' #end">
+#if(($!{tc.data_type}=='varchar'||$!{tc.data_type}=='VARCHAR') && ($!{tc.var_len}>200))
+		 	and t.$!{tc.column_name} like '%${ b.$!{tc.fieldName}}%'
+#else
+		 	and t.$!{tc.column_name} = #{b.$!{tc.fieldName}}
+#end
+		</if>
+#end
+#end
+		</where>
+    </sql>
+    
+    <!-- [=下面是业务自定义代码=] -->
+    
+</mapper>

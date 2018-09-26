@@ -1,0 +1,150 @@
+﻿package $!{tab.pkgAction};
+
+import javax.annotation.Resource;
+
+
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import $!{tab.pkgBo}.$!{tab.clsName}VO;
+import $!{tab.pkgBean}.$!{tab.clsName};
+import $!{tab.ipkgService}.I$!{tab.clsName}Service;
+
+import com.vphoto.mall.$!{tab.model}.provider.controller.BaseController;
+import com.vphoto.mall.$!{tab.model}.remote.pojo.page.PageInfo;
+import com.vphoto.mall.$!{tab.model}.remote.pojo.page.ReqPage;
+import com.vphoto.mall.$!{tab.model}.remote.result.ResBean;
+import com.vphoto.mall.common.BaseUtils;
+import com.vphoto.mall.common.exception.ResultCodeEnum;
+import com.vphoto.mall.common.exception.VPhotoException;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+
+/**
+ * 简述：：$!{tab.table_comment}【$!{tab.table_name}】 <br>
+ * 详细描述：<br>
+ * 详细说明该类完成主要功能和注意点 <br>
+ * 时间： $!{tab.createTime} <br> 
+ * 版权: Copyright 2011-2050©唯存（上海）技术有限公司 All Rights Reserved.<br>
+ * @author  $!{tab.userName}
+ * @version V1.0
+ */
+@RestController
+@Api("$!{tab.table_comment}Api")
+@RequestMapping("/$!{tab.instName}")
+public class $!{tab.clsName}Controller extends BaseController {
+
+	//private static final Logger log = LoggerFactory.getLogger($!{tab.clsName}Controller.class);
+
+	
+	@Resource
+	private I$!{tab.clsName}Service $!{tab.instName}Service;
+	
+	/**
+	 * 保存实体
+	 * @param b
+	 * @
+	 */
+	@RequestMapping(value="/insert",method={RequestMethod.POST})
+	@ApiOperation(value="保存$!{tab.table_comment}",notes="保存$!{tab.table_comment}，注意必传项. 返回 obj 对象类型($!{tab.clsName}VO)",response=ResBean.class)
+	@ApiImplicitParams({
+		@ApiImplicitParam(dataType="$!{tab.clsName}VO",name="vo",required=true,paramType="body",value="$!{tab.tabDesc}")
+	})
+	public ResBean insert(@RequestBody $!{tab.clsName}VO vo) {
+		//====1.信息校验
+		if(BaseUtils.isNull(vo)) throw new VPhotoException(ResultCodeEnum.参数异常, "查询条件参数不能为空!");//对对象的校验
+		//====2业务对象转数据对象
+		//$!{tab.clsName} d = new $!{tab.clsName}();
+		//BaseUtils.copyBeanNullValid(vo, d);
+		//====3.保存对象
+		$!{tab.instName}Service.save(vo); //这里采用全部插入非有效插入
+		//BaseUtils.copyBeanNullValid(d, vo);//把d拷贝给b
+		return this.getResBean(vo);
+	}
+	
+	/**
+	 * 更新实体
+	 * 
+	 * @param b
+	 * @
+	 */
+	@RequestMapping(value="/update",method={RequestMethod.POST})
+	@ApiOperation(value="修改$!{tab.table_comment}",notes="修改$!{tab.table_comment}，注意必传项。返回obj 对象值(true)",response=ResBean.class)
+	@ApiImplicitParams({
+		@ApiImplicitParam(dataType="$!{tab.clsName}VO",name="vo",required=true,paramType="body",value="$!{tab.tabDesc}")
+	})
+	public ResBean update(@RequestBody $!{tab.clsName}VO vo) {
+		//====1.信息校验
+		if(BaseUtils.isNull(vo)) throw new VPhotoException(ResultCodeEnum.参数异常, "查询条件参数不能为空!");
+		//====2 业务对象转数据对象
+		//$!{tab.clsName} d = new $!{tab.clsName}();
+		//BaseUtils.copyBeanNullInvalid(vo, d);
+		//====3.更新对象
+		$!{tab.instName}Service.updateBySelective(vo); //这里采用有效更新 即只更新有值的属性
+		return this.getResBean("true");
+	}
+	
+	
+	/**
+	 * 删除
+	 * @param ids
+	 * @
+	 */
+//	@RequestMapping(value="/delete",method={RequestMethod.POST})
+//	@ApiOperation(value="删除$!{tab.table_comment}",notes="删除$!{tab.table_comment}，多个使用逗号分割。。返回obj 对象值(true)",response=ResBean.class)
+//	@ApiImplicitParams({
+//		@ApiImplicitParam(name="ids",value="id，多个使用逗号分割",dataType="String",defaultValue="",required=true,paramType="body"),
+//	})
+//	public ResBean delete(@RequestBody String ids) {
+//		$!{tab.instName}Service.deleteSoftly(ids);//这里采用的是软删除
+//		return this.getResBean("true");
+//	}
+	
+	/**
+	 * 根据id查询单个信息  <br>
+	 * @param id 
+	 * @return 
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/getOne",method={RequestMethod.POST})
+	@ApiOperation(value="查询单个对象",notes="根据id查询$!{tab.table_comment}对象 。返回obj 对象类型($!{tab.clsName}VO)",response=ResBean.class)
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="id",value="表id",dataType="Long",defaultValue="1",required=true,paramType="body")
+	})
+    public ResBean getOne(@RequestBody Long id) throws Exception {
+    	if(BaseUtils.isNull(id)) throw new VPhotoException(ResultCodeEnum.参数异常, "查询条件参数不能为空!"); 
+		$!{tab.clsName} d = $!{tab.instName}Service.getEntity($!{tab.clsName}.class, id);
+		$!{tab.clsName}VO b=new $!{tab.clsName}VO();
+		BaseUtils.copyBeanNullInvalid(d, b);
+    	return this.getResBean(b);
+    }
+	
+	
+	
+	/**
+	 * 查询单表信息，带分页  <br>
+	 * @param p 查询条件 包含页数和每页个数
+	 * @return ResBean.pageInfo 取该属性的值
+	 * @
+	 */
+	@RequestMapping(value="/list",method={RequestMethod.POST}) // 
+	@ApiOperation(value="查询$!{tab.table_comment}",notes="查询$!{tab.table_comment}。返回pageInfo",response=ResBean.class)
+	@ApiImplicitParams({
+		@ApiImplicitParam(dataType="ReqPage<$!{tab.clsName}VO>",name="page",required=true,paramType="body",value="{\"page\":1,\"pageSize\":10,\"obj\":{}}")
+	})
+    public ResBean listAllAsPage(@RequestBody ReqPage<$!{tab.clsName}VO> page) {
+    	if(BaseUtils.isNull(page)) throw new VPhotoException(ResultCodeEnum.参数异常, "查询条件参数不能为空!"); 
+		if(BaseUtils.isNull(page.getObj())) throw new VPhotoException(ResultCodeEnum.参数异常, "查询条件参数不能为空!");
+		 
+		PageInfo res = $!{tab.instName}Service.getPages(page);;
+    	return this.getResBean(res);
+    }
+	
+	//<!-- [=下面是业务自定义代码=] -->
+	
+}

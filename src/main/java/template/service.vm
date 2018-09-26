@@ -1,0 +1,211 @@
+﻿package $!{tab.pkgService};
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import $!{tab.pkgBean}.$!{tab.clsName};
+//import $!{tab.pkgDao}.I$!{tab.clsName}Dao;
+import $!{tab.ipkgService}.I$!{tab.clsName}Service;
+import com.vphoto.mall.$!{tab.model}.provider.service.impl.BaseService;
+import $!{tab.pkgBo}.$!{tab.clsName}VO;
+#if($!{tab.idMake}=='0'||$!{tab.bussKey})		
+#import com.ms.common.component.IDUtile;
+#end
+#foreach($imp in $!serviceImpList)
+$!{imp}
+#end
+import com.vphoto.mall.common.CheckUtils;
+import com.vphoto.mall.common.BaseUtils;
+import com.vphoto.mall.common.DateUtils;
+import com.vphoto.mall.$!{tab.model}.remote.pojo.page.PageInfo;
+import com.vphoto.mall.$!{tab.model}.remote.pojo.page.ReqPage;
+
+ /**
+ * 简述：$!{tab.table_comment}【$!{tab.table_name}】<br>
+ * 详细描述：<br>
+ * 详细说明该类完成主要功能和注意点 <br>
+ * 时间：$!{tab.createTime} <br> 
+ * 版权: Copyright 2011-2050©唯存（上海）技术有限公司 All Rights Reserved.<br>
+ * @author   $!{tab.userName} 
+ * @version V1.0
+ */
+@Service
+@Transactional(rollbackFor=Exception.class)
+public class $!{tab.clsName}Service extends BaseService<$!{tab.clsName}> implements I$!{tab.clsName}Service {
+
+	//private static final Logger log = LoggerFactory.getLogger($!{tab.clsName}Service.class);
+	
+	//@Resource
+	//private I$!{tab.clsName}Dao $!{tab.instName}Dao; 
+	
+	
+	
+	/**
+	 * 全量属性插入数据
+	 * 如果属性值为空，也会插入到数据库中
+	 * @param e
+	 */
+	@Override
+	public $!{tab.clsName}VO save($!{tab.clsName}VO vo) {
+		//==1.1 对象判断
+//		CheckUtils.checkNull($!{tab.instName}Dao, "$!{tab.instName}Dao");
+		CheckUtils.checkNull(vo, "vo");
+		//==1.2生成id和业务主键 根据业务规则设置业务code的值，或者初始化值,
+#if($!{tab.idMake}=='0')		
+		vo.setId(IDUtile.nextId());
+#end		
+#if($!{tab.bussKey})	
+		if(BaseUtils.isNull(vo.get$!{tab.bussKey.fieldNameU}())) vo.set$!{tab.bussKey.fieldNameU}(IDUtile.nextId()+"");
+#end		
+		//==1.3 业务非空字段的校验
+#if($!{tab.nullFields}!='')
+		CheckUtils.checkNulls(vo, "$!{tab.nullFields},crUserId");//非空校验
+#end
+		//==1.4 业务字段长度的校验
+#if($!{tab.lengthFields}!='')
+		CheckUtils.checkLengths(vo, "$!{tab.lengthFields}");//需要长度校验
+#end
+		//==1.5 业务key重复判断
+		
+		//==1.6增加系统参数
+		vo.setCrDate(DateUtils.getNow()); //插入时间
+		vo.setOpDate(DateUtils.getNow()); //更新时间 默认为插入时间
+		vo.setOpUserId(BaseUtils.null2long(vo.getCrUserId())); //更新人 默认创建人
+		if(BaseUtils.isNull(vo.getDelTag()))vo.setDelTag(0); //有效数据 未删除状态
+		
+		$!{tab.clsName} d = new $!{tab.clsName}();
+		BaseUtils.copyBeanNullValid(vo, d);
+		
+		this.saveEntity(d);
+		
+		return vo;
+	}
+
+	
+	
+	/**
+	 * 全量更新，使用该方法一定要谨慎
+	 * 如果对象内的属性为空则会把空值同步到数据库
+	 * @param e
+	 * @return
+	 */
+	@Override
+	public Integer update($!{tab.clsName}VO vo) {
+		//==1.1 对象判断
+//		CheckUtils.checkNull($!{tab.instName}Dao, "$!{tab.instName}Dao");
+		CheckUtils.checkNull(vo, "vo");
+		//==1.2 业务非空字段的校验
+#if($!{tab.bussKey})		
+		CheckUtils.checkNulls(vo, "$!{tab.bussKey.fieldName},opUserId");
+#else 
+		CheckUtils.checkNulls(vo, "id,opUserId");
+#end		
+		//==1.3 业务字段长度的校验
+#if($!{tab.lengthFields}!='')
+		CheckUtils.checkLengths(vo, "$!{tab.lengthFields}");//需要长度校验
+#end
+		//==1.4  判断业务主键重复校验
+		
+		//==1.5增加系统参数
+		vo.setOpDate(DateUtils.getNow()); //更新时间
+		
+		$!{tab.clsName} d = this.loadEntity($!{tab.clsName}.class, vo.getId());
+		BaseUtils.copyBeanNullValid(vo, d);
+		
+		this.updateEntity(d);
+		return 1;
+	}
+	
+	/**
+	 * 有效属性更新
+	 * 只更新e内有值的属性，e空属性都不会变更到数据库 
+	 * @param e
+	 * @return
+	 */
+	@Override
+	public Integer updateBySelective($!{tab.clsName}VO vo) {
+		//==1.1 对象判断
+//		CheckUtils.checkNull($!{tab.instName}Dao, "$!{tab.instName}Dao");
+		CheckUtils.checkNull(vo, "vo");
+		//==1.2 业务非空字段的校验
+#if($!{tab.bussKey})		
+		CheckUtils.checkNulls(vo, "$!{tab.bussKey.fieldName},opUserId");
+#else 
+		CheckUtils.checkNulls(vo, "id,opUserId");
+#end
+		//==1.3 业务字段长度的校验
+#if($!{tab.lengthFields}!='')
+		CheckUtils.checkLengths(vo, "$!{tab.lengthFields}");//需要长度校验
+#end
+		//==1.4    判断业务主键重复校验
+	
+		//==1.5增加系统参数
+		vo.setOpDate(DateUtils.getNow()); //更新时间
+		
+		$!{tab.clsName} d = this.loadEntity($!{tab.clsName}.class, vo.getId());
+		BaseUtils.copyBeanNullInvalid(vo, d);
+		
+		this.updateEntity(d);
+		return 1;
+	}
+
+
+	/**
+	 * 软删除 ，即只更新状态位
+	 * @param ids id可以传多个，使用逗号分割
+	 */
+	public void deleteSoftly(String ids) {
+		//==1.1 对象判断
+//		CheckUtils.checkNull($!{tab.instName}Dao, "$!{tab.instName}Dao");
+		CheckUtils.checkNull(ids, "ids");
+		StringBuffer sb = new StringBuffer();
+		for(String id:ids.split(",")) {
+			if(BaseUtils.isNull(id))continue;
+			sb.append(id).append(",");
+		}
+		sb.setLength(sb.length()-1);
+		CheckUtils.checkNull(ids, "ids");//二次判断 防止上面加工后是个空字符串
+		
+	}
+
+#if($!{tab.bussKey})	
+	/**
+	 * 软删除 ，即只更新状态位
+	 * @param bussKeys 业务主键可以传多个，使用逗号分割
+	 */
+	@Override
+	public void deleteSoftlyByBussKey(String bussKeys) {
+//		CheckUtils.checkNull($!{tab.instName}Dao, "$!{tab.instName}Dao");
+		CheckUtils.checkNull(bussKeys, "bussKeys");
+		StringBuffer sb = new StringBuffer();
+		for(String bussKey:bussKeys.split(",")) {
+			if(BaseUtils.isNull(bussKey))continue;
+			sb.append(bussKey).append("','");
+		}
+		sb.setLength(sb.length()-3);
+		CheckUtils.checkNull(sb.toString(), "bussKeys");//二次判断 防止上面加工后是个空字符串
+		$!{tab.instName}Dao.deleteSoftlyByBussKey(sb.toString());
+	}
+#end	
+	@Override
+	public PageInfo getPages(ReqPage<$!{tab.clsName}VO> page){
+		StringBuilder hql=new StringBuilder("from $!{tab.clsName} m where m.delTag=?");
+		$!{tab.clsName}VO vo=page.getObj();
+		List<Object> paras=new ArrayList<Object>();
+		paras.add(vo.getDelTag());
+		
+		if(vo.getId()!=null) {
+			hql.append(" and m.id=?");
+			paras.add(vo.getId());
+		}
+		
+		hql.append(" order by m.id desc");
+		return super.getPages(page.getPageIndex(), page.getPageSize(), hql.toString(), paras.toArray());
+	}
+	//<!-- [=下面是业务自定义代码=] -->
+
+	
+}

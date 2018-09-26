@@ -1,0 +1,75 @@
+﻿package $!{tab.pkgMapping};
+
+
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import $!{tab.pkgBo}.$!{tab.clsName}VO;
+import com.vphoto.mall.$!{tab.model}.remote.pojo.page.ReqPage;
+import com.vphoto.mall.$!{tab.model}.remote.result.ResBean;
+
+import org.springframework.cloud.openfeign.FeignClient;
+/**
+ * 简述：：$!{tab.table_comment}【$!{tab.table_name}】 <br>
+ * 详细描述：<br>
+ * 详细说明该类完成主要功能和注意点 <br>
+ * 时间： $!{tab.createTime} <br> 
+ * 版权: Copyright 2011-2050©唯存（上海）技术有限公司 All Rights Reserved.<br>
+ * @author  $!{tab.userName}
+ * @version V1.0
+ */
+@FeignClient(name = "$!{tab.mappingName}")
+public interface I$!{tab.clsName}RemoteCall  {
+
+	
+	
+	/**
+	 * 保存实体
+	 * @param b
+	 * @
+	 */
+	@RequestMapping(value="/$!{tab.instName}/insert",method={RequestMethod.POST})
+	public ResBean insert(@RequestBody $!{tab.clsName}VO vo) ;
+	
+	/**
+	 * 更新实体
+	 * 
+	 * @param b
+	 * @
+	 */
+	@RequestMapping(value="/$!{tab.instName}/update",method={RequestMethod.POST})
+	public ResBean update(@RequestBody $!{tab.clsName}VO vo) ;
+	
+	
+	/**
+	 * 删除
+	 * @param ids
+	 * @
+	 */
+//	@RequestMapping(value="/$!{tab.instName}/delete",method={RequestMethod.POST})
+//	public ResBean delete(@RequestBody String ids) ;
+	
+	/**
+	 * 根据id查询单个信息  <br>
+	 * @param id 
+	 * @return 
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/$!{tab.instName}/getOne",method={RequestMethod.POST})
+    public ResBean getOne(@RequestBody Long id) throws Exception;
+	
+	
+	
+	/**
+	 * 查询单表信息，带分页  <br>
+	 * @param p 查询条件 包含页数和每页个数
+	 * @return ResBean.pageInfo 取该属性的值
+	 * @
+	 */
+	@RequestMapping(value="/$!{tab.instName}/list",method={RequestMethod.POST}) // 
+    public ResBean listAllAsPage(@RequestBody ReqPage<$!{tab.clsName}VO> page) ;
+	
+	//<!-- [=下面是业务自定义代码=] -->
+	
+}

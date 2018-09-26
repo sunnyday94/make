@@ -1,0 +1,41 @@
+﻿package $!{tab.ipkgService};
+
+import com.vphoto.mall.$!{tab.model}.remote.pojo.page.PageInfo;
+import com.vphoto.mall.$!{tab.model}.remote.pojo.page.ReqPage;
+import $!{tab.pkgBean}.$!{tab.clsName};
+import com.vphoto.mall.$!{tab.model}.provider.service.IBaseService;
+import $!{tab.pkgBo}.$!{tab.clsName}VO;
+/**
+ * 备注：$!{tab.table_comment}
+ * 创建时间:$!{tab.createTime}
+ * @author  $!{tab.userName}
+ *
+ */
+public interface I$!{tab.clsName}Service extends IBaseService<$!{tab.clsName}> {
+	
+	/**分页或者列表查询
+     * @param page
+     * @return
+     */
+	public PageInfo getPages(ReqPage<$!{tab.clsName}VO> page);
+	
+	/**保存数据
+	 * @param vo
+	 * @return
+	 */
+	public $!{tab.clsName}VO save($!{tab.clsName}VO vo);
+	
+	/**修改
+	 * @param vo
+	 * @return
+	 */
+	public Integer update($!{tab.clsName}VO vo);
+	
+	/**部分修改
+	 * @param vo
+	 * @return
+	 */
+	public Integer updateBySelective($!{tab.clsName}VO vo);
+	
+	//<!-- [=下面是业务自定义代码=] -->
+}

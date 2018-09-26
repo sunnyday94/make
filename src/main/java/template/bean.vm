@@ -1,0 +1,105 @@
+﻿package $!{tab.pkgBean};
+
+#foreach($imp in $!beanImpList)
+$!{imp}
+#end
+
+import com.vphoto.mall.$!{tab.model}.provider.metadata.entity.BaseBean;
+import javax.persistence.*;
+/**
+ * 表名：$!{tab.table_name}
+ * 备注：$!{tab.table_comment}
+ * 创建时间:$!{tab.createTime}
+ * @author $!{tab.userName}
+ *
+ */
+@Entity
+@Table(name = "$!{tab.table_name}")
+public class $!{tab.clsName} extends BaseBean {
+	
+	//序列化标示
+	private static final long serialVersionUID =1;
+	
+	//====字段
+#set($fieldStrs='')	
+#foreach($tc in $!tcList)
+#if($!{tc.fieldName}!='crDate'&&$!{tc.fieldName}!='opDate'&&$!{tc.fieldName}!='delTag'&&$!{tc.fieldName}!='crUserId'&&$!{tc.fieldName}!='opUserId')#set($fieldStrs=$!fieldStrs.concat($!{tc.fieldType}).concat(' ').concat($!{tc.fieldName}).concat(','))#end####为了生成构造函数需要的
+#if($!{tc.fieldName}!='crDate'&&$!{tc.fieldName}!='opDate'&&$!{tc.fieldName}!='delTag'&&$!{tc.fieldName}!='crUserId'&&$!{tc.fieldName}!='opUserId'&&$!{tc.fieldName}!='version')
+#if($!{tc.data_type}=='datetime'||$!{tc.data_type}=='DATETIME'||$!{tc.data_type}=='date'||$!{tc.data_type}=='DATE')
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+#end	
+#if($!{tc.data_type}=='time'||$!{tc.data_type}=='TIME')
+	@JsonFormat(pattern="HH:mm:ss")
+#end
+#if($!{tc.fieldName}=='id')
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+#end
+	@Column(name = "$!{tc.column_name}")	 
+	private $!{tc.fieldType} $!{tc.fieldName} ; //$!{tc.column_comment}
+#end
+#end
+
+	/** 
+	 * 默认构造函数
+	 */
+	public $!{tab.clsName}() {
+	}
+	
+	/** 
+	 * 默认构造函数
+	 */
+#set($len=$!fieldStrs.length()+(-1))	 
+#set($fieldStrs=$!fieldStrs.substring(0,$!len))	 
+	public $!{tab.clsName}($!fieldStrs) {
+#foreach($tc in $!tcList)
+#if($!{tc.fieldName}!='crDate'&&$!{tc.fieldName}!='opDate'&&$!{tc.fieldName}!='delTag'&&$!{tc.fieldName}!='crUserId'&&$!{tc.fieldName}!='opUserId')
+		this.$!{tc.fieldName} = $!{tc.fieldName};
+#end
+#end
+	}
+	
+	/** 
+	 * 清空方法
+	 */
+#set($len=$!fieldStrs.length()+(-1))	 
+#set($fieldStrs=$!fieldStrs.substring(0,$!len))	 
+	public void clean() {
+#foreach($tc in $!tcList)
+		this.$!{tc.fieldName} = null;
+#end
+	}
+	
+	//====get set方法
+#foreach($tc in $!tcList)		
+#if($!{tc.fieldName}!='crDate'&&$!{tc.fieldName}!='opDate'&&$!{tc.fieldName}!='delTag'&&$!{tc.fieldName}!='crUserId'&&$!{tc.fieldName}!='opUserId'&&$!{tc.fieldName}!='version')
+	/**
+	 * 字段名称：$!{tc.column_name} <br>
+	 * 字段备注: $!{tc.column_comment} <br>
+	 * 字段类型: $!{tc.data_type} <br>
+	 * 字段长度：$!{tc.column_type} <br>
+	 * 是否允许为空：$!{tc.is_nullable} <br>
+	 * 字段默认值：$!{tc.column_default} <br>
+	 */
+	public void set$!{tc.fieldNameU} ($!{tc.fieldType} $!{tc.fieldName}) {
+		this.$!{tc.fieldName}=$!{tc.fieldName};
+	}
+	
+	/**
+	 * 字段名称：$!{tc.column_name} <br>
+	 * 字段备注: $!{tc.column_comment} <br>
+	 * 字段类型: $!{tc.data_type} <br> 
+	 * 字段长度：$!{tc.column_type} <br>
+	 * 是否允许为空：$!{tc.is_nullable} <br>
+	 * 字段默认值：$!{tc.column_default} <br>
+	 */
+	public $!{tc.fieldType} get$!{tc.fieldNameU}() {
+		return this.$!{tc.fieldName};
+	}
+	
+#end	
+#end	
+		
+	//<!-- [=下面是业务自定义代码=] -->
+
+}
