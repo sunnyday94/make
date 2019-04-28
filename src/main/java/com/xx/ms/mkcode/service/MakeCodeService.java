@@ -86,7 +86,7 @@ public class MakeCodeService {
 			}
 			if(makeFlg.get("bo")) {
 				//==生成模型 bo
-				tmpFilePath = fileSrcPath + "/../remote/pojo/"+tab.getModel() +"/"+ tab.getClsName() + "VO.java";
+				tmpFilePath = fileSrcPath + "/../api/pojo/"+tab.getModel() +"/"+ tab.getClsName() + "VO.java";
 				String log = makeFile(tmpFilePath, tmpPath, "bo.vm", names, values, "}");
 				sb.append(log);
 			}
@@ -122,7 +122,7 @@ public class MakeCodeService {
 			}
 			if(makeFlg.get("mapping")) {
 				//==生成mapper
-				tmpFilePath = fileSrcPath + "/../remote/call/v1/"+tab.getModel() +"/I"+ tab.getClsName() + "RemoteCall.java";
+				tmpFilePath = fileSrcPath + "/../api/call/v1/"+tab.getModel() +"/I"+ tab.getClsName() + "RemoteCall.java";
 				String log = makeFile(tmpFilePath, tmpPath, "mapping.vm", names, values, "}");
 				sb.append(log);
 			}
@@ -131,9 +131,12 @@ public class MakeCodeService {
 	}
 
 	/**
-	 *
-	 *
+	 * 获取用户下的所有表
+	 * 
+	 * @param con
 	 * @param dbName
+	 * @param tabs
+	 * @param model
 	 * @return
 	 * @throws Exception
 	 */
@@ -171,6 +174,7 @@ public class MakeCodeService {
 
 	/**
 	 * 获取所有列的属性
+	 * @param con 连接
 	 * @param dbName 库名称
 	 * @param tab 表名称
 	 * @return
@@ -257,7 +261,7 @@ public class MakeCodeService {
 		if(cols==null||cols.size()<=0)return list;
 		String baseCols = "crDate,opDate,deleteFlag,crUserId,opUserId";
 		for(TableCols col:cols) {
-			if(baseCols.contains(col.getFieldName()))continue;
+			if(baseCols.indexOf(col.getFieldName())>=0)continue;
 			if("BigDecimal".equals(col.getFieldType())) {
 				if(BaseUtils.isNull(map.get("BigDecimal")))	map.put("BigDecimal", "import java.math.BigDecimal;");
 			}else if("Date".equals(col.getFieldType())) {
@@ -299,9 +303,7 @@ public class MakeCodeService {
 		StringBuffer sb = new StringBuffer();
 		sb.append("{").append("<br>");
 		for(TableCols col:cols) {
-			if(baseCols.contains(col.getFieldName())) {
-				continue;
-			}
+			if(baseCols.indexOf(col.getFieldName())>=0)continue;
 			sb.append(col.getFieldName()).append(":(")
 			  .append(BaseUtils.null2String(col.getColumn_comment()).replaceAll("\r\n", "").replaceAll("\n", "")).append(",")
 			  .append(col.getColumn_type()).append(",")
@@ -420,7 +422,9 @@ public class MakeCodeService {
 	
 	/**
 	 * 获取库下的所有表
+	 * @param con
 	 * @param dbName
+	 * @param tabs
 	 * @return
 	 * @throws Exception
 	 */
@@ -463,7 +467,9 @@ public class MakeCodeService {
 	
 	/**
 	 * 获取库下的所有表
+	 * @param con
 	 * @param dbName
+	 * @param tabName
 	 * @return
 	 * @throws Exception
 	 */
@@ -506,9 +512,9 @@ public class MakeCodeService {
 	} 
     /**
      * 执行带参数的查询
+     * @param con
      * @param sql
-     * @param names
-     * @param obj
+     * @param values
      * @return
      * @throws Exception
      */
@@ -557,4 +563,5 @@ public class MakeCodeService {
 			}
 			return "========"+tmpName+"["+tmpFilePath+"]=="+"\r\n";
     }
+    
 }
