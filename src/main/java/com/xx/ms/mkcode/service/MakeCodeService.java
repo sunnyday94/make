@@ -225,7 +225,7 @@ public class MakeCodeService {
 				nullFields+= col.getFieldName()+",";
 			}
 			//==判断当前字段是否需要对长度进行判断
-			if(lengthType.indexOf(col.getData_type())>=0) {
+			if(lengthType.contains(col.getData_type())) {
 				lengthFields+= col.getFieldName()+"-"+"0"+"-"+col.getVar_len()+",";
 			}
 			//==业务主键 目前只支持一个
@@ -261,7 +261,7 @@ public class MakeCodeService {
 		if(cols==null||cols.size()<=0)return list;
 		String baseCols = "crDate,opDate,deleteFlag,crUserId,opUserId";
 		for(TableCols col:cols) {
-			if(baseCols.indexOf(col.getFieldName())>=0)continue;
+			if(baseCols.contains(col.getFieldName())) continue;
 			if("BigDecimal".equals(col.getFieldType())) {
 				if(BaseUtils.isNull(map.get("BigDecimal")))	map.put("BigDecimal", "import java.math.BigDecimal;");
 			}else if("Date".equals(col.getFieldType())) {
@@ -303,7 +303,7 @@ public class MakeCodeService {
 		StringBuffer sb = new StringBuffer();
 		sb.append("{").append("<br>");
 		for(TableCols col:cols) {
-			if(baseCols.indexOf(col.getFieldName())>=0)continue;
+			if(baseCols.contains(col.getFieldName())) continue;
 			sb.append(col.getFieldName()).append(":(")
 			  .append(BaseUtils.null2String(col.getColumn_comment()).replaceAll("\r\n", "").replaceAll("\n", "")).append(",")
 			  .append(col.getColumn_type()).append(",")
@@ -338,11 +338,11 @@ public class MakeCodeService {
 	 * @throws Exception
 	 */
 	private String toUpperUpper(String str) throws Exception {
-		StringBuffer res = new StringBuffer();
+		StringBuilder res = new StringBuilder();
 		if (str == null || str.length() <= 0)
 			return res.toString();
 		String[] strs = str.split("_");
-		if (strs == null || strs.length <= 0)
+		if (strs.length <= 0)
 			return res.toString();
 		for (String s : strs) {
 			if (s == null || s.length() <= 0)
@@ -364,11 +364,11 @@ public class MakeCodeService {
 	 * @throws Exception
 	 */
 	private String toGetSet(String str) throws Exception {
-		StringBuffer res = new StringBuffer();
+		StringBuilder res = new StringBuilder();
 		if (str == null || str.length() <= 0)
 			return res.toString();
 		String[] strs = str.split("_");
-		if (strs == null || strs.length <= 0)
+		if (strs.length <= 0)
 			return res.toString();
 		String s = null;
 		for (int i = 0; i < strs.length; i++) {
@@ -397,11 +397,11 @@ public class MakeCodeService {
 	 * @throws Exception
 	 */
 	private String toLowerUpper(String str) throws Exception {
-		StringBuffer res = new StringBuffer();
+		StringBuilder res = new StringBuilder();
 		if (str == null || str.length() <= 0)
 			return res.toString();
 		String[] strs = str.split("_");
-		if (strs == null || strs.length <= 0)
+		if (strs.length <= 0)
 			return res.toString();
 		boolean flg = true;
 		for (String s : strs) {
